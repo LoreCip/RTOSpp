@@ -38,7 +38,7 @@ void Task_Telemetry_Medium() {
     log_task("Telemetry", "STARTED");
     log_task("TELEMETRY", "Invio radio in corso...");
     
-    for (int i = 0; i < 200000; i++) {
+    for (int i = 0; i < 300000; i++) {
         double finto_calcolo = i * 3.14; (void)finto_calcolo;
         globalScheduler->GetTaskByThreadId(); // Yield implicito per il simulatore
     }
@@ -53,8 +53,13 @@ void Task_Navigation_Low() {
     log_task("Navigation", "STARTED");
     log_task("NAVIGATION", "Calcolo nuova rotta satellitare...");
 
-    double new_x = 0, new_y = 0, new_z = 0;
-    for (int i = 0; i < 400000; i++) {
+    navMutex.Lock();
+    double new_x = globalCoord.x;
+    double new_y = globalCoord.y;
+    double new_z = globalCoord.z;
+    navMutex.Unlock();
+
+    for (int i = 0; i < 500000; i++) {
         new_x += 0.001; 
         new_y += 0.002;
         globalScheduler->GetTaskByThreadId(); // Yield implicito per il simulatore
@@ -75,12 +80,17 @@ int main() {
     Scheduler rtosScheduler;
     globalScheduler = &rtosScheduler;
 
-    rtosScheduler.AddTask(Task_FlightControl_High, "Flight_Ctrl", 0, 10);
-    rtosScheduler.AddTask(Task_Telemetry_Medium,   "Telemetry",   5, 30);
-    rtosScheduler.AddTask(Task_Navigation_Low,     "Navigation",  10, 50);
+    bool check = true;
+    check = rtosScheduler.AddTask(Task_FlightControl_High, "Flight_Ctrl", 0, 10);
+    check = rtosScheduler.AddTask(Task_Telemetry_Medium,   "Telemetry",   5, 30);
+    check = rtosScheduler.AddTask(Task_Navigation_Low,     "Navigation",  10, 50);
+
+    if (!check){
+        print("[ERROR] Error in task definitions.");
+        return 200;
+    }
 
     rtosScheduler.Start();
-
     while (true) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }

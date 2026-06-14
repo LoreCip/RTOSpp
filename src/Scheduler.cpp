@@ -61,7 +61,6 @@ void Scheduler::TaskExecutionLoop() {
         // Execution finished for this period, block the task
         myself->state = TaskState::BLOCKED;
         myself->nextWakeTime += myself->period;
-
     }
 }
 

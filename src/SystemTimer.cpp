@@ -16,11 +16,11 @@ void SystemTimer::Init() {
     sa.sa_flags = SA_RESTART;                    // continue running the timer if interrupted by the OS for other system calls
     sigemptyset(&sa.sa_mask);
 
-    sigaction(SIGRTMIN, &sa, nullptr);            // run the function when SIGRTMIN is recieved
+    sigaction(SIGRTMIN, &sa, nullptr);           // run the function when SIGRTMIN is recieved
 
     struct sigevent se = {};                     // define the event
     se.sigev_notify = SIGEV_SIGNAL;              // when event happens, send a signal
-    se.sigev_signo = SIGRTMIN;                    // which signal to send?
+    se.sigev_signo = SIGRTMIN;                   // which signal to send?
     
     timer_create(CLOCK_MONOTONIC, &se, &SystemTimer::timerId); 
 

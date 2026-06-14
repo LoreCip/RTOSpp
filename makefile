@@ -3,7 +3,7 @@ TARGET = build/main
 
 # Compilatore e flag
 CXX = g++ -D_DEBUG
-CXXFLAGS = -Wall -Wextra -std=c++17 -Isrc/include
+CXXFLAGS = -Wall -Wextra -std=c++17 -Iinclude
 
 # Cartelle
 SRC_DIR = src
